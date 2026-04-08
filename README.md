@@ -21,7 +21,7 @@ Sulu CMS bundle that enables click-to-edit in the preview iframe: hovering a blo
 ## Installation
 
 ```bash
-composer require alengo/sulu-preview-block-focus-bundle:"2.x-dev"
+composer require alengo/sulu-preview-block-focus-bundle
 ```
 
 Register the bundle in `config/bundles.php`:
