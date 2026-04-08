@@ -1,9 +1,15 @@
 {
     "name": "alengo/sulu-preview-block-focus-bundle",
     "type": "symfony-bundle",
+    "homepage": "https://github.com/alengodev/SuluPreviewBlockFocusBundle",
     "description": "Sulu CMS admin enhancement: clicking a block in the preview iframe scrolls to and expands the corresponding block in the admin form.",
     "keywords": ["sulu", "cms", "preview", "block", "focus", "admin"],
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Huber-De Monte"
+        }
+    ],
     "require": {
         "php": "^8.2",
         "sulu/sulu": "^3.0",
