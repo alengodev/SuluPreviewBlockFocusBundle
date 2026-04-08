@@ -29,16 +29,28 @@ Alengo\SuluPreviewBlockFocusBundle\PreviewBlockFocusBundle::class => ['all' => t
 
 ### Admin JS
 
-Add to your admin `assets/admin/package.json`:
+**1.** Add to `assets/admin/package.json` under `dependencies`:
 
 ```json
 "sulu-preview-block-focus-bundle": "file:../../vendor/alengo/sulu-preview-block-focus-bundle/assets/admin"
 ```
 
-Import in `assets/admin/app.js`:
+**2.** Install the dependency:
+
+```bash
+cd assets/admin && npm install
+```
+
+**3.** Import in `assets/admin/app.js`:
 
 ```js
 import 'sulu-preview-block-focus-bundle';
+```
+
+**4.** Rebuild the admin:
+
+```bash
+cd assets/admin && npm run build
 ```
 
 ### Website JS (Webpack Encore)
