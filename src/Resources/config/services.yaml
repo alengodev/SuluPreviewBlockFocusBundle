@@ -1,0 +1,4 @@
+services:
+    Alengo\SuluPreviewBlockFocusBundle\Twig\PreviewSecurityExtension:
+        tags:
+            - { name: twig.extension }
