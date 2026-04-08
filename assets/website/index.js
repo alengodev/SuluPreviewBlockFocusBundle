@@ -1,13 +1,18 @@
 if (window.parent !== window) {
 
+    const html = document.documentElement;
+    const activeSegment = html.dataset.suluSegment || '';
+    const activeWebspace = html.dataset.suluWebspace || '';
+    const targetOrigin = window.location.origin || '*';
+
     const icon = document.createElement('button');
     const titles = { de: 'Block fokussieren', en: 'Focus block', it: 'Focalizza blocco' };
-    icon.title = titles[document.documentElement.lang] || titles.de;
+    icon.title = titles[html.lang] || titles.en;
     icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M288-16c8.8 0 16 7.2 16 16l0 32.6C415 40.4 503.6 129 511.4 240l32.6 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32.6 0C503.6 383 415 471.6 304 479.4l0 32.6c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-32.6C161 471.6 72.4 383 64.6 272L32 272c-8.8 0-16-7.2-16-16s7.2-16 16-16l32.6 0C72.4 129 161 40.4 272 32.6L272 0c0-8.8 7.2-16 16-16zM96.7 272c7.7 93.3 82.1 167.6 175.3 175.3l0-47.3c0-8.8 7.2-16 16-16s16 7.2 16 16l0 47.3c93.3-7.7 167.6-82.1 175.3-175.3L432 272c-8.8 0-16-7.2-16-16s7.2-16 16-16l47.3 0C471.6 146.7 397.3 72.4 304 64.7l0 47.3c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-47.3C178.7 72.4 104.4 146.7 96.7 240l47.3 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-47.3 0zM288 232a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>';
 
     Object.assign(icon.style, {
         position: 'absolute',
-        zIndex: '9999',
+        zIndex: '10001',
         width: '27px',
         height: '26px',
         padding: '4px 2px 2px',
@@ -33,7 +38,7 @@ if (window.parent !== window) {
         width: '6px',
         height: '100%',
         background: 'rgba(109,180,199,0.2)',
-        zIndex: '9998',
+        zIndex: '10000',
         cursor: 'pointer',
     });
 
@@ -43,25 +48,14 @@ if (window.parent !== window) {
 
     let activeBlock = null;
 
-    function postBlockClick(id) {
-        window.parent.postMessage({ type: 'sulu-preview-block-click', id }, document.referrer || '*');
-    }
-
     function triggerClick() {
         if (!activeBlock) return;
-
-        // Collect ancestor block IDs from outermost to innermost
-        const path = [];
-        let el = activeBlock;
-        while (el) {
-            path.unshift(el.dataset.blockId);
-            el = el.parentElement && el.parentElement.closest('[data-block-id]');
-        }
-
-        // Send parent IDs first, child last — admin needs ~300ms per level to expand
-        path.forEach(function(id, index) {
-            setTimeout(function() { postBlockClick(id); }, index * 50);
-        });
+        window.parent.postMessage({
+            type: 'sulu-preview-block-click',
+            id: activeBlock.dataset.blockId,
+            segment: activeSegment,
+            webspace: activeWebspace,
+        }, targetOrigin);
     }
 
     function showIcon(block) {
@@ -86,34 +80,39 @@ if (window.parent !== window) {
         icon.style.display = 'none';
     }
 
+    function getOutermostBlock(el) {
+        let block = null;
+        let node = el instanceof Element ? el : null;
+        while (node && node !== document.body) {
+            if (node.hasAttribute('data-block-id')) block = node;
+            node = node.parentElement;
+        }
+        return block;
+    }
+
     document.addEventListener('mouseenter', function(e) {
         if (e.target === stripe || e.target === icon) return;
-        const block = e.target instanceof Element && e.target.closest('[data-block-id]');
+        const block = getOutermostBlock(e.target);
         if (block) showIcon(block);
     }, true);
 
     document.addEventListener('mouseleave', function(e) {
         if (e.relatedTarget === icon || e.relatedTarget === stripe) return;
-        const block = e.target instanceof Element && e.target.closest('[data-block-id]');
+        const block = getOutermostBlock(e.target);
         if (block && block === activeBlock) {
-            const toBlock = e.relatedTarget instanceof Element && e.relatedTarget.closest('[data-block-id]');
-            if (toBlock && toBlock !== block) showIcon(toBlock);
-            else if (!toBlock) hideIcon();
+            const toBlock = getOutermostBlock(e.relatedTarget);
+            if (toBlock !== block) hideIcon();
         }
     }, true);
 
     icon.addEventListener('mouseleave', function(e) {
-        if (e.relatedTarget === stripe) return;
         const toBlock = e.relatedTarget instanceof Element && e.relatedTarget.closest('[data-block-id]');
-        if (toBlock) showIcon(toBlock);
-        else hideIcon();
+        if (!toBlock && e.relatedTarget !== stripe) hideIcon();
     });
 
     stripe.addEventListener('mouseleave', function(e) {
-        if (e.relatedTarget === icon) return;
         const toBlock = e.relatedTarget instanceof Element && e.relatedTarget.closest('[data-block-id]');
-        if (toBlock) showIcon(toBlock);
-        else hideIcon();
+        if (!toBlock && e.relatedTarget !== icon) hideIcon();
     });
 
     icon.addEventListener('click', triggerClick);
