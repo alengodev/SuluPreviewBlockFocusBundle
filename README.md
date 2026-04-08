@@ -75,6 +75,21 @@ Include the script conditionally in your Twig layout (only in Sulu preview conte
 {% endif %}
 ```
 
+### HTML element — Segment & Webspace attributes
+
+When Sulu **segments** are used, the website JS reads the active segment and webspace from `data-sulu-segment` and `data-sulu-webspace` attributes on the `<html>` element. Without these attributes the bundle still works, but segment-filtered blocks will not be correctly excluded from the count.
+
+Add the attributes to the `<html>` tag in your main layout (e.g. `index.html.twig`):
+
+```twig
+{% set dataSuluAttributes = sulu_user_loggedin_and_preview(app.request)
+    ? ' data-sulu-segment="' ~ app.request.attributes.get('_sulu').getAttributes()['segment'].key|default ~ '"'
+    ~ ' data-sulu-webspace="' ~ request.webspaceKey|default ~ '"'
+    : '' %}
+
+<html lang="{{ app.request.locale|split('_')[0] }}"{{ dataSuluAttributes|raw }}>
+```
+
 ### Block markup
 
 Add `data-block-id` with the format `blockType-counter` (1-based count of that block type on the page):
