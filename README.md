@@ -12,8 +12,8 @@ Sulu CMS bundle that enables click-to-edit in the preview iframe: hovering a blo
 ## Requirements
 
 - PHP 8.2+
-- Sulu CMS 3.0+
-- Symfony 7.0+
+- Sulu CMS 3.1+
+- Symfony 7.0 or 8.0
 
 ## Installation
 
