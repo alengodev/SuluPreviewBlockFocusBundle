@@ -118,4 +118,4 @@ The admin reads the block UUID from Sulu's `data-sulu-block-id` attribute on the
 | `sulu-preview-visible-blocks` | Preview → Admin | `{ids}` — UUIDs of all blocks visible in the preview |
 | `sulu-preview-block-scroll` | Admin → Preview | `{id}` — block UUID to scroll to |
 
-Both sides only accept messages from the expected window (admin: an iframe of the current page with the same origin; preview: `window.parent`).
+Both sides only accept messages from the expected window (admin: an iframe of the current page with the same origin, for `sulu-preview-block-click` also the admin window itself, e.g. from other admin bundles; preview: `window.parent`).

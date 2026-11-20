@@ -60,10 +60,17 @@ function isFromPreviewFrame(event) {
     return false;
 }
 
+// Other admin bundles (e.g. alengo/sulu-notification-bundle) post the same message from the admin window itself to
+// expand a block and scroll to it, also without an open preview.
+function isFromAdminOrPreviewFrame(event) {
+    if (event.origin === window.location.origin && event.source === window) return true;
+    return isFromPreviewFrame(event);
+}
+
 window.addEventListener('message', function(event) {
     const data = event.data;
     if (!data || data.type !== 'sulu-preview-block-click' || typeof data.id !== 'string' || !data.id) return;
-    if (!isFromPreviewFrame(event)) return;
+    if (!isFromAdminOrPreviewFrame(event)) return;
 
     const allSections = document.querySelectorAll('[class*="sortableBlockList"] section[role="switch"]');
     let target = null;
